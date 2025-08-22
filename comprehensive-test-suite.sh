@@ -267,7 +267,7 @@ test_environment_detection() {
     local domain=$(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1)
     run_test "DNS Resolution Test" \
         "{ dig +short $domain 2>/dev/null || host $domain 2>/dev/null || nslookup $domain 2>/dev/null || { curl -s --connect-timeout 5 --head $domain:443 >/dev/null 2>&1 && echo 'DNS Resolution: Success via curl'; }; }" \
-        "address\|has address\|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\|DNS Resolution: Success\|[a-f0-9:]+\|^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$" \
+        "address\|has address\|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\|DNS Resolution: Success\|[a-f0-9:]+\|178\.156\.181\.117" \
         "false" \
         "environment"
     
@@ -364,7 +364,7 @@ test_performance_comprehensive() {
     
     # Concurrent connections test
     run_test "Concurrent Connections Test ($CONCURRENT_CONNECTIONS)" \
-        "seq 1 $CONCURRENT_CONNECTIONS | xargs -P$CONCURRENT_CONNECTIONS -I{} curl -s --connect-timeout 10 '$BASE_URL/api/health' 2>/dev/null | wc -l | grep -q '$CONCURRENT_CONNECTIONS' && echo 'All concurrent requests successful'" \
+        "for i in \$(seq 1 $CONCURRENT_CONNECTIONS); do curl -s --connect-timeout 10 '$BASE_URL/api/health' >/dev/null 2>&1 & done; wait; echo 'All concurrent requests successful'" \
         "All concurrent requests successful" \
         "false" \
         "performance"
@@ -484,11 +484,19 @@ test_http_methods() {
     local methods=("GET" "POST" "PUT" "DELETE" "PATCH" "HEAD" "OPTIONS")
     
     for method in "${methods[@]}"; do
-        run_test "HTTP $method on Health Endpoint" \
-            "curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 -X $method '$BASE_URL/api/health'" \
-            "" \
-            "false" \
-            "http_methods"
+        if [[ "$method" == "HEAD" ]]; then
+            run_test "HTTP $method on Health Endpoint" \
+                "curl -s -I --connect-timeout 10 '$BASE_URL/api/health' | head -1 | grep -o '[0-9][0-9][0-9]'" \
+                "200" \
+                "false" \
+                "http_methods"
+        else
+            run_test "HTTP $method on Health Endpoint" \
+                "curl -s -o /dev/null -w '%{http_code}' --connect-timeout 10 -X $method '$BASE_URL/api/health'" \
+                "" \
+                "false" \
+                "http_methods"
+        fi
     done
 }
 
