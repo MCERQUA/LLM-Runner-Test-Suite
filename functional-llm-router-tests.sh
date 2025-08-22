@@ -7,6 +7,14 @@
 
 set -e
 
+# Load .env file if it exists
+if [ -f .env ]; then
+    echo "Loading configuration from .env file..."
+    set -a  # automatically export all variables
+    source .env
+    set +a  # stop automatically exporting
+fi
+
 # Configuration
 BASE_URL="${BASE_URL:-http://178.156.181.117:3000}"
 # Use the persistent test API key by default
