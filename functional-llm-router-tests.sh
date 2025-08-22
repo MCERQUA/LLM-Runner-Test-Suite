@@ -8,8 +8,9 @@
 set -e
 
 # Configuration
-BASE_URL="${BASE_URL:-http://localhost:3000}"
-API_KEY="${ROUTER_API_KEY:-your-api-key-here}"
+BASE_URL="${BASE_URL:-http://178.156.181.117:3000}"
+# Use the persistent test API key by default
+API_KEY="${ROUTER_API_KEY:-llm_test_persistent_key_fixed_2025.persistent_test_secret_never_changes_mikecerqua_2025_llm_router}"
 TOTAL_TESTS=0
 PASSED_TESTS=0
 FAILED_TESTS=0
