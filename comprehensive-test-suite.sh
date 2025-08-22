@@ -263,9 +263,11 @@ test_environment_detection() {
         "false" \
         "environment"
     
+    # DNS Resolution Test with multiple fallback methods
+    local domain=$(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1)
     run_test "DNS Resolution Test" \
-        "dig +short $(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1) || host $(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1)" \
-        "" \
+        "{ dig +short $domain 2>/dev/null || host $domain 2>/dev/null || nslookup $domain 2>/dev/null || { curl -s --connect-timeout 5 --head $domain:443 >/dev/null 2>&1 && echo 'DNS Resolution: Success via curl'; }; }" \
+        "address\|has address\|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\|DNS Resolution: Success" \
         "false" \
         "environment"
     
