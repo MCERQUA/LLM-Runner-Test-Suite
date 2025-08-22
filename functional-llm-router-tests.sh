@@ -567,11 +567,14 @@ test_simple_loader_functionality() {
     local body=$(parse_response "$response")
     
     if [ "$status" -eq 200 ]; then
-        if echo "$body" | grep -q '"model":"simple-fallback"\|"model":"simulation-mode"'; then
+        if echo "$body" | grep -q '"model":"Simple Fallback Model"' && echo "$body" | grep -q '"response"'; then
+            log "✅ SimpleLoader returned valid response with model: Simple Fallback Model"
             return 0
         fi
     fi
     
+    log "❌ SimpleLoader test failed. Status: $status"
+    log "Response: $(echo "$body" | head -c 200)..."
     return 1
 }
 
