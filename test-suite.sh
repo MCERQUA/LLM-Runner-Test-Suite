@@ -199,8 +199,8 @@ test_basic_connectivity() {
         "true"
     
     run_test "DNS Resolution" \
-        "nslookup $(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1)" \
-        "Name:" \
+        "curl -s --connect-timeout 5 --head $(echo $BASE_URL | sed 's|https\?://||' | cut -d'/' -f1):443 >/dev/null 2>&1 && echo 'DNS Resolution: Success'" \
+        "DNS Resolution: Success" \
         "true"
 }
 
