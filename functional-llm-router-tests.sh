@@ -8,7 +8,7 @@
 set -e
 
 # Configuration
-BASE_URL="http://localhost:3000"
+BASE_URL="${BASE_URL:-http://104.248.2.129:3000}"
 API_KEY="${ROUTER_API_KEY:-your-api-key-here}"
 TOTAL_TESTS=0
 PASSED_TESTS=0
