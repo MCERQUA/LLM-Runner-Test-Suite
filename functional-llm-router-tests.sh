@@ -570,7 +570,9 @@ test_auto_format_detection() {
     # This tests the router's ability to detect model formats
     local response=$(api_call "/api/models/load" "POST" '{
         "source": "simple",
-        "id": "auto-detect-test"
+        "format": "simple",
+        "id": "auto-detect-test",
+        "name": "Auto Detection Test Model"
     }')
     
     local status=$(get_http_status "$response")
